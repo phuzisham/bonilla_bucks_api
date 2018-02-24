@@ -22,7 +22,7 @@ RSpec.describe 'Account API', type: :request do
     end
   end
 
-  # Test suite for GET /accounts/:id
+  # GET /accounts/:id
   describe 'GET /accounts/:id' do
     before { get "/accounts/#{account_id}" }
 
@@ -46,6 +46,37 @@ RSpec.describe 'Account API', type: :request do
 
       it 'returns a not found message' do
         expect(response.body).to match(/Couldn't find Account/)
+      end
+    end
+  end
+
+  # POST /accounts
+  describe 'POST /accounts' do
+    # valid payload
+    let(:valid_attributes) { { balance: 174, user_id: nil } }
+
+    context 'when the request is valid' do
+      before { post '/accounts', params: valid_attributes }
+
+      it 'creates an account' do
+        expect(json['balance']).to eq(174)
+      end
+
+      it 'returns status code 201' do
+        expect(response).to have_http_status(201)
+      end
+    end
+
+    context 'when the request is invalid' do
+      before { post '/accounts', params: { user_id: nil  } }
+
+      it 'returns status code 422' do
+        expect(response).to have_http_status(422)
+      end
+
+      it 'returns a validation failure message' do
+        expect(response.body)
+          .to match(/Validation failed: Balance can't be blank/)
       end
     end
   end
