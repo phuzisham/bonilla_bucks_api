@@ -2,7 +2,6 @@ require 'rails_helper'
 
 # Note `json` is a custom helper to parse JSON responses
 RSpec.describe 'Account API', type: :request do
-  FactoryBot.find_definitions
   # test data
   let!(:accounts) { create_list(:account, 10) }
   let(:account_id) { accounts.first.id }
