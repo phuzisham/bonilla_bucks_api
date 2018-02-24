@@ -68,6 +68,7 @@ RSpec.describe 'Account API', type: :request do
     end
 
     context 'when the request is invalid' do
+      # invalid payload
       before { post '/accounts', params: { user_id: nil  } }
 
       it 'returns status code 422' do
@@ -78,6 +79,32 @@ RSpec.describe 'Account API', type: :request do
         expect(response.body)
           .to match(/Validation failed: Balance can't be blank/)
       end
+    end
+  end
+
+  # PUT /accounts/:id
+  describe 'PUT /accounts/:id' do
+    let(:valid_attributes) { { balance: 203, user_id: nil } }
+
+    context 'when the record exists' do
+      before { put "/accounts/#{account_id}", params: valid_attributes }
+
+      it 'updates the record' do
+        expect(response.body).to be_empty
+      end
+
+      it 'returns status code 204' do
+        expect(response).to have_http_status(204)
+      end
+    end
+  end
+
+  # DELETE /accounts/:id
+  describe 'DELETE /accounts/:id' do
+    before { delete "/accounts/#{account_id}" }
+
+    it 'returns status code 204' do
+      expect(response).to have_http_status(204)
     end
   end
 end

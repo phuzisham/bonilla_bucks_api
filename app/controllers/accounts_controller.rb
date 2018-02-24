@@ -18,6 +18,18 @@ class AccountsController < ApplicationController
     json_response(@account)
   end
 
+  # PUT /accounts/:id
+  def update
+    @account.update(account_params)
+    head :no_content
+  end
+
+  # DELETE /accounts/:id
+  def destroy
+    @account.destroy
+    head :no_content
+  end
+
   private
 
   def account_params
