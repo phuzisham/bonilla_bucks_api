@@ -3,13 +3,14 @@ require 'rails_helper'
 # Note `json` is a custom helper to parse JSON responses
 RSpec.describe 'Account API', type: :request do
   # test data
-  let!(:accounts) { create_list(:account, 10) }
+  let!(:user) { create(:user) }
+  let!(:accounts) { create_list(:account, 10, user_id: user.id) }
   let(:account_id) { accounts.first.id }
-
+  let(:auth_headers) { create(:user).create_new_auth_token }
   # GET /accounts
   describe 'GET /accounts' do
     # HTTP request before examples
-    before { get '/accounts' }
+    before { get '/accounts', headers: auth_headers }
 
     it 'returns accounts' do
       expect(json).not_to be_empty
@@ -23,7 +24,8 @@ RSpec.describe 'Account API', type: :request do
 
   # GET /accounts/:id
   describe 'GET /accounts/:id' do
-    before { get "/accounts/#{account_id}" }
+    # HTTP request before examples
+    before { get "/accounts/#{account_id}", headers: auth_headers }
 
     context 'when the record exists' do
       it 'returns the account' do
@@ -52,10 +54,12 @@ RSpec.describe 'Account API', type: :request do
   # POST /accounts
   describe 'POST /accounts' do
     # valid payload
-    let(:valid_attributes) { { balance: 174, user_id: nil } }
+    let(:valid_attributes) { { balance: 174, user_id: user.id } }
 
     context 'when the request is valid' do
-      before { post '/accounts', params: valid_attributes }
+      let(:test_headers) { user.create_new_auth_token }
+      # HTTP request before examples
+      before { post '/accounts', params: valid_attributes, headers: test_headers }
 
       it 'creates an account' do
         expect(json['balance']).to eq(174)
@@ -67,8 +71,10 @@ RSpec.describe 'Account API', type: :request do
     end
 
     context 'when the request is invalid' do
+      let(:test_headers) { user.create_new_auth_token }
+      # HTTP request before examples
       # invalid payload
-      before { post '/accounts', params: { user_id: nil  } }
+      before { post '/accounts', params: { user_id: user.id  }, headers: test_headers }
 
       it 'returns status code 422' do
         expect(response).to have_http_status(422)
@@ -86,7 +92,8 @@ RSpec.describe 'Account API', type: :request do
     let(:valid_attributes) { { balance: 203, user_id: nil } }
 
     context 'when the record exists' do
-      before { put "/accounts/#{account_id}", params: valid_attributes }
+      # HTTP request before examples
+      before { put "/accounts/#{account_id}", params: valid_attributes, headers: auth_headers }
 
       it 'updates the record' do
         expect(response.body).to be_empty
@@ -100,7 +107,8 @@ RSpec.describe 'Account API', type: :request do
 
   # DELETE /accounts/:id
   describe 'DELETE /accounts/:id' do
-    before { delete "/accounts/#{account_id}" }
+    # HTTP request before examples
+    before { delete "/accounts/#{account_id}", headers: auth_headers }
 
     it 'returns status code 204' do
       expect(response).to have_http_status(204)
