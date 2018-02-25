@@ -6,7 +6,7 @@ RSpec.describe 'Account API', type: :request do
   let!(:user) { create(:user) }
   let!(:accounts) { create_list(:account, 10, user_id: user.id) }
   let(:account_id) { accounts.first.id }
-  let(:auth_headers) { create(:user).create_new_auth_token }
+  let(:auth_headers) { user.create_new_auth_token }
   # GET /accounts
   describe 'GET /accounts' do
     # HTTP request before examples
@@ -57,9 +57,8 @@ RSpec.describe 'Account API', type: :request do
     let(:valid_attributes) { { balance: 174, user_id: user.id } }
 
     context 'when the request is valid' do
-      let(:test_headers) { user.create_new_auth_token }
       # HTTP request before examples
-      before { post '/accounts', params: valid_attributes, headers: test_headers }
+      before { post '/accounts', params: valid_attributes, headers: auth_headers }
 
       it 'creates an account' do
         expect(json['balance']).to eq(174)
@@ -71,10 +70,9 @@ RSpec.describe 'Account API', type: :request do
     end
 
     context 'when the request is invalid' do
-      let(:test_headers) { user.create_new_auth_token }
       # HTTP request before examples
       # invalid payload
-      before { post '/accounts', params: { user_id: user.id  }, headers: test_headers }
+      before { post '/accounts', params: { user_id: user.id  }, headers: auth_headers }
 
       it 'returns status code 422' do
         expect(response).to have_http_status(422)
