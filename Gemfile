@@ -12,6 +12,10 @@ gem 'rails', '~> 5.1.5'
 gem 'pg', '>= 0.18', '< 2.0'
 # Use Puma as the app server
 gem 'puma', '~> 3.7'
+# Use Devise for authentication
+gem 'devise_token_auth', '~> 0.1.42'
+# Use Omniauth with Devise
+gem 'omniauth', '~> 1.0'
 
 group :development, :test do
   gem 'rspec-rails', '~> 3.7'
