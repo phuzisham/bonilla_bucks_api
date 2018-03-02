@@ -9,5 +9,5 @@ class User < ActiveRecord::Base
   has_many :deposits, through: :accounts
   has_many :withdrawls, through: :accounts
 
-  validates_presence_of :name, :email, :username, :encrypted_password
+  validates_presence_of :name, :email, :username, :password
 end
