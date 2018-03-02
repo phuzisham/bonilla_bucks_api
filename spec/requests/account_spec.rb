@@ -11,8 +11,7 @@ RSpec.describe 'Account API', type: :request do
   # GET /accounts
   describe 'GET users/user_id/accounts' do
     # HTTP request before examples
-    before { get "users/#{user_id}/accounts", headers: auth_headers }
-
+    before { get "/users/#{user_id}/accounts", headers: auth_headers }
     it 'returns accounts' do
       expect(json).not_to be_empty
       expect(json.size).to eq(10)
@@ -26,12 +25,14 @@ RSpec.describe 'Account API', type: :request do
   # GET /accounts/:id
   describe 'GET users/user_id/accounts/:id' do
     # HTTP request before examples
-    before { get "users/#{user_id}/accounts/#{account_id}", headers: auth_headers }
+    before { get "/users/#{user_id}/accounts/#{account_id}", headers: auth_headers }
 
     context 'when the record exists' do
       it 'returns the account' do
         expect(json).not_to be_empty
+
         expect(json['id']).to eq(account_id)
+
       end
 
       it 'returns status code 200' do
@@ -59,7 +60,7 @@ RSpec.describe 'Account API', type: :request do
 
     context 'when the request is valid' do
       # HTTP request before examples
-      before { post "users/#{user_id}/accounts", params: valid_attributes, headers: auth_headers }
+      before { post "/users/#{user_id}/accounts", params: valid_attributes, headers: auth_headers }
 
       it 'creates an account' do
         expect(json['balance']).to eq(174)
@@ -73,7 +74,7 @@ RSpec.describe 'Account API', type: :request do
     context 'when the request is invalid' do
       # HTTP request before examples
       # invalid payload
-      before { post "users/#{user_id}/accounts", params: { user_id: user_id  }, headers: auth_headers }
+      before { post "/users/#{user_id}/accounts", params: { user_id: user_id  }, headers: auth_headers }
 
       it 'returns status code 422' do
         expect(response).to have_http_status(422)
@@ -92,7 +93,7 @@ RSpec.describe 'Account API', type: :request do
 
     context 'when the record exists' do
       # HTTP request before examples
-      before { put "users/#{user_id}/accounts/#{account_id}", params: valid_attributes, headers: auth_headers }
+      before { put "/users/#{user_id}/accounts/#{account_id}", params: valid_attributes, headers: auth_headers }
 
       it 'updates the record' do
         expect(response.body).to be_empty
@@ -107,7 +108,7 @@ RSpec.describe 'Account API', type: :request do
   # DELETE /accounts/:id
   describe 'DELETE /accounts/:id' do
     # HTTP request before examples
-    before { delete "users/#{user_id}/accounts/#{account_id}", headers: auth_headers }
+    before { delete "/users/#{user_id}/accounts/#{account_id}", headers: auth_headers }
 
     it 'returns status code 204' do
       expect(response).to have_http_status(204)
