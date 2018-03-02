@@ -1,11 +1,10 @@
 class AccountsController < ApplicationController
-  before_action :set_account, only: [:show, :update, :destroy]
-  before_action :authenticate_user!
+  before_action :set_user
+  before_action :set_user_account, only: [:show, :update, :destroy]
 
   # GET /accounts
   def index
-    @accounts = Account.all
-    json_response(@accounts)
+    json_response(@user.accounts)
   end
 
   # POST /accounts
@@ -37,7 +36,11 @@ class AccountsController < ApplicationController
     params.permit(:balance, :user_id)
   end
 
-  def set_account
-    @account = Account.find(params[:id])
+  def set_user
+    @user = User.find(params[:user_id])
+  end
+
+  def set_user_account
+    @account = @user.accounts.find_by!(id: params[:id]) if @account
   end
 end
