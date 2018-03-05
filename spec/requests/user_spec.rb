@@ -3,7 +3,8 @@ require 'rails_helper'
 # Note `json` is a custom helper to parse JSON responses
 RSpec.describe 'User API', type: :request do
   # test data
-  let!(:user) { create(:user) }
+  let!(:user) { create(:user)}
+  let(:user_id) { user.id }
   let(:auth_headers) { user.create_new_auth_token }
   # GET /users
   describe 'GET /users' do
@@ -12,7 +13,7 @@ RSpec.describe 'User API', type: :request do
 
     it 'returns users' do
       expect(json).not_to be_empty
-      expect(json.size).to eq(10)
+      expect(json.size).to eq(1)
     end
 
     it 'returns status code 200' do
@@ -52,14 +53,18 @@ RSpec.describe 'User API', type: :request do
   # POST /users
   describe 'POST /users' do
     # valid payload
-    let(:valid_attributes) { { balance: 174, user_id: user.id } }
+    let(:valid_attributes) { { name:'bryan', id: user.id } }
 
     context 'when the request is valid' do
       # HTTP request before examples
       before { post '/users', params: valid_attributes, headers: auth_headers }
 
       it 'creates an user' do
-        expect(json['balance']).to eq(174)
+
+        expect(json['name']).to eq('bryan')
+        # expect(json['email']).to eq('humpty@d.com')
+        # expect(json['username']).to eq('bigBoi')
+        # expect(json['password']).to eq('hamsterface')
       end
 
       it 'returns status code 201' do
@@ -70,7 +75,7 @@ RSpec.describe 'User API', type: :request do
     context 'when the request is invalid' do
       # HTTP request before examples
       # invalid payload
-      before { post '/users', params: { user_id: user.id  }, headers: auth_headers }
+      before { post '/users', params: { id: user.id  }, headers: auth_headers }
 
       it 'returns status code 422' do
         expect(response).to have_http_status(422)
@@ -78,14 +83,14 @@ RSpec.describe 'User API', type: :request do
 
       it 'returns a validation failure message' do
         expect(response.body)
-          .to match(/Validation failed: Balance can't be blank/)
+          .to match(/Validation failed: Name can't be blank/)
       end
     end
   end
 
   # PUT /users/:id
   describe 'PUT /users/:id' do
-    let(:valid_attributes) { { balance: 203, user_id: nil } }
+    let(:valid_attributes) { { name: 'bryan', id: nil } }
 
     context 'when the record exists' do
       # HTTP request before examples
