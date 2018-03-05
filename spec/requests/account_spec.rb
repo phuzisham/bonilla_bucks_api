@@ -26,13 +26,10 @@ RSpec.describe 'Account API', type: :request do
   describe 'GET users/user_id/accounts/:id' do
     # HTTP request before examples
     before { get "/users/#{user_id}/accounts/#{account_id}", headers: auth_headers }
-
     context 'when the record exists' do
       it 'returns the account' do
         expect(json).not_to be_empty
-
         expect(json['id']).to eq(account_id)
-
       end
 
       it 'returns status code 200' do
