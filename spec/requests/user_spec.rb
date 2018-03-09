@@ -3,6 +3,7 @@ require 'rails_helper'
 # Note `json` is a custom helper to parse JSON responses
 RSpec.describe 'User API', type: :request do
   # test data
+  let!(:users) {create_list(:user,9)}
   let!(:user) { create(:user)}
   let(:user_id) { user.id }
   let(:auth_headers) { user.create_new_auth_token }
@@ -13,7 +14,7 @@ RSpec.describe 'User API', type: :request do
 
     it 'returns users' do
       expect(json).not_to be_empty
-      expect(json.size).to eq(1)
+      expect(json.size).to eq(10)
     end
 
     it 'returns status code 200' do
@@ -38,7 +39,7 @@ RSpec.describe 'User API', type: :request do
     end
 
     context 'when the record does not exist' do
-      let(:user_id) { 100 }
+      let(:user_id) { 1000 }
 
       it 'returns status code 404' do
         expect(response).to have_http_status(404)
@@ -53,18 +54,17 @@ RSpec.describe 'User API', type: :request do
   # POST /users
   describe 'POST /users' do
     # valid payload
-    let(:valid_attributes) { { name:'bryan', id: user.id } }
+    let(:valid_attributes) {{ name: "bryan", email: "abc@defg.com", username: "bigB", password: "100bbaa222" }}
 
     context 'when the request is valid' do
       # HTTP request before examples
       before { post '/users', params: valid_attributes, headers: auth_headers }
 
       it 'creates an user' do
-
-        expect(json['name']).to eq('bryan')
-        # expect(json['email']).to eq('humpty@d.com')
-        # expect(json['username']).to eq('bigBoi')
-        # expect(json['password']).to eq('hamsterface')
+        expect(response.body).to match("bryan")
+        expect(response.body).to match("abc@defg.com")
+        expect(response.body).to match("bigB")
+        #password spec?
       end
 
       it 'returns status code 201' do
@@ -75,7 +75,7 @@ RSpec.describe 'User API', type: :request do
     context 'when the request is invalid' do
       # HTTP request before examples
       # invalid payload
-      before { post '/users', params: { id: user.id  }, headers: auth_headers }
+      before { post '/users', params: { user_id: user.id  }, headers: auth_headers }
 
       it 'returns status code 422' do
         expect(response).to have_http_status(422)
@@ -83,14 +83,14 @@ RSpec.describe 'User API', type: :request do
 
       it 'returns a validation failure message' do
         expect(response.body)
-          .to match(/Validation failed: Name can't be blank/)
+          .to match(/Password can't be blank, Email can't be blank, Email is not an email, Name can't be blank, Username can't be blank/)
       end
     end
   end
 
   # PUT /users/:id
   describe 'PUT /users/:id' do
-    let(:valid_attributes) { { name: 'bryan', id: nil } }
+    let(:valid_attributes) { { balance: 203, user_id: nil } }
 
     context 'when the record exists' do
       # HTTP request before examples

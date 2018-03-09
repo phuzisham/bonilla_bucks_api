@@ -1,7 +1,7 @@
 class AccountsController < ApplicationController
   before_action :set_user
   before_action :set_user_account, only: [:show, :update, :destroy]
-  
+
   # GET /accounts
   def index
     json_response(@user.accounts)
@@ -41,6 +41,6 @@ class AccountsController < ApplicationController
   end
 
   def set_user_account
-    @account = @user.accounts.find_by!(id: params[:id]) if @account
+    @account = @user.accounts.find_by!(id: params[:id]) 
   end
 end
