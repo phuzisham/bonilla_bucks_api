@@ -3,13 +3,15 @@ require 'rails_helper'
 RSpec.describe 'Withdrawls API', type: :request do
   # test data
   let!(:account) { create(:account) }
+  let!(:user) { create(:user) }
+  let(:user_id) { user.id }
   let!(:withdrawls) { create_list(:withdrawl, 20, account_id: account.id) }
   let(:account_id) { account.id }
   let(:id) { withdrawls.first.id }
 
   # Test suite for GET /accounts/:account_id/withdrawls
   describe 'GET /accounts/:account_id/withdrawls' do
-    before { get "/accounts/#{account_id}/withdrawls" }
+    before { get "/users/#{user_id}/accounts/#{account_id}/withdrawls" }
 
     context 'when account exists' do
       it 'returns status code 200' do
@@ -36,7 +38,7 @@ RSpec.describe 'Withdrawls API', type: :request do
 
   # Test suite for GET /accounts/:account_id/withdrawls/:id
   describe 'GET /accounts/:account_id/withdrawls/:id' do
-    before { get "/accounts/#{account_id}/withdrawls/#{id}" }
+    before { get "/users/#{user_id}/accounts/#{account_id}/withdrawls/#{id}" }
 
     context 'when account withdrawl exists' do
       it 'returns status code 200' do
@@ -66,7 +68,7 @@ RSpec.describe 'Withdrawls API', type: :request do
     let(:valid_attributes) { { notes: 'Visit Narnia', amount: 150, account_id: account_id } }
 
     context 'when request attributes are valid' do
-      before { post "/accounts/#{account_id}/withdrawls", params: valid_attributes }
+      before { post "/users/#{user_id}/accounts/#{account_id}/withdrawls", params: valid_attributes }
 
       it 'returns status code 201' do
         expect(response).to have_http_status(201)
@@ -74,7 +76,7 @@ RSpec.describe 'Withdrawls API', type: :request do
     end
 
     context 'when an invalid request' do
-      before { post "/accounts/#{account_id}/withdrawls", params: {} }
+      before { post "/users/#{user_id}/accounts/#{account_id}/withdrawls", params: {} }
 
       it 'returns status code 422' do
         expect(response).to have_http_status(422)
@@ -90,7 +92,7 @@ RSpec.describe 'Withdrawls API', type: :request do
   describe 'PUT /accounts/:account_id/withdrawls/:id' do
     let(:valid_attributes) { { notes: 'Mozart' } }
 
-    before { put "/accounts/#{account_id}/withdrawls/#{id}", params: valid_attributes }
+    before { put "/users/#{user_id}/accounts/#{account_id}/withdrawls/#{id}", params: valid_attributes }
 
     context 'when withdrawl exists' do
       it 'returns status code 204' do
@@ -118,7 +120,7 @@ RSpec.describe 'Withdrawls API', type: :request do
 
   # Test suite for DELETE /accounts/:id
   describe 'DELETE /accounts/:id' do
-    before { delete "/accounts/#{account_id}/withdrawls/#{id}" }
+    before { delete "/users/#{user_id}/accounts/#{account_id}/withdrawls/#{id}" }
 
     it 'returns status code 204' do
       expect(response).to have_http_status(204)

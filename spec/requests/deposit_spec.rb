@@ -3,13 +3,15 @@ require 'rails_helper'
 RSpec.describe 'Deposits API', type: :request do
   # test data
   let!(:account) { create(:account) }
+  let!(:user) { create(:user) }
+  let(:user_id) { user.id }
   let!(:deposits) { create_list(:deposit, 20, account_id: account.id) }
   let(:account_id) { account.id }
   let(:id) { deposits.first.id }
 
   # Test suite for GET /accounts/:account_id/deposits
   describe 'GET /accounts/:account_id/deposits' do
-    before { get "/accounts/#{account_id}/deposits" }
+    before { get "/users/#{user_id}/accounts/#{account_id}/deposits" }
 
     context 'when account exists' do
       it 'returns status code 200' do
@@ -36,7 +38,7 @@ RSpec.describe 'Deposits API', type: :request do
 
   # Test suite for GET /accounts/:account_id/deposits/:id
   describe 'GET /accounts/:account_id/deposits/:id' do
-    before { get "/accounts/#{account_id}/deposits/#{id}" }
+    before { get "/users/#{user_id}/accounts/#{account_id}/deposits/#{id}" }
 
     context 'when account deposit exists' do
       it 'returns status code 200' do
@@ -66,7 +68,7 @@ RSpec.describe 'Deposits API', type: :request do
     let(:valid_attributes) { { notes: 'Visit Narnia', amount: 150, account_id: account_id } }
 
     context 'when request attributes are valid' do
-      before { post "/accounts/#{account_id}/deposits", params: valid_attributes }
+      before { post "/users/#{user_id}/accounts/#{account_id}/deposits", params: valid_attributes }
 
       it 'returns status code 201' do
         expect(response).to have_http_status(201)
@@ -74,7 +76,7 @@ RSpec.describe 'Deposits API', type: :request do
     end
 
     context 'when an invalid request' do
-      before { post "/accounts/#{account_id}/deposits", params: {} }
+      before { post "/users/#{user_id}/accounts/#{account_id}/deposits", params: {} }
 
       it 'returns status code 422' do
         expect(response).to have_http_status(422)
@@ -90,7 +92,7 @@ RSpec.describe 'Deposits API', type: :request do
   describe 'PUT /accounts/:account_id/deposits/:id' do
     let(:valid_attributes) { { notes: 'Mozart' } }
 
-    before { put "/accounts/#{account_id}/deposits/#{id}", params: valid_attributes }
+    before { put "/users/#{user_id}/accounts/#{account_id}/deposits/#{id}", params: valid_attributes }
 
     context 'when deposit exists' do
       it 'returns status code 204' do
@@ -118,7 +120,7 @@ RSpec.describe 'Deposits API', type: :request do
 
   # Test suite for DELETE /accounts/:id
   describe 'DELETE /accounts/:id' do
-    before { delete "/accounts/#{account_id}/deposits/#{id}" }
+    before { delete "/users/#{user_id}/accounts/#{account_id}/deposits/#{id}" }
 
     it 'returns status code 204' do
       expect(response).to have_http_status(204)
